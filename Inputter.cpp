@@ -2,30 +2,41 @@
 
 #include "Arduino.h"
 
+#include "Definitions.h"
+
+Timer Inputter::input_timer_;
+
 enum KeyPressed Inputter::GetKeyPressed(int analog_pin)
 {
   enum KeyPressed return_enum = KeyPressed::NOTHING;
-  int x = analogRead(0);
-  if (x < 60)
+  if (input_timer_.check(kInputDelayMillies))
   {
-    return_enum = KeyPressed::RIGHT;
+    int x = analogRead(0);
+    if (x < 60)
+    {
+      return_enum = KeyPressed::RIGHT;
+      input_timer_.reset();
+    }
+    else if (x < 200)
+    {
+      return_enum = KeyPressed::UP;
+      input_timer_.reset();
+    }
+    else if (x < 400)
+    {
+      return_enum = KeyPressed::DOWN;
+      input_timer_.reset();
+    }
+    else if (x < 600)
+    {
+      return_enum = KeyPressed::LEFT;
+      input_timer_.reset();
+    }
+    else if (x < 800)
+    {
+      return_enum = KeyPressed::SELECT;
+      input_timer_.reset();
+    }
   }
-  else if (x < 200)
-  {
-    return_enum = KeyPressed::UP;
-  }
-  else if (x < 400)
-  {
-    return_enum = KeyPressed::DOWN;
-  }
-  else if (x < 600)
-  {
-    return_enum = KeyPressed::LEFT;
-  }
-  else if (x < 800)
-  {
-    return_enum = KeyPressed::SELECT;
-  }
-
   return return_enum;
 }
