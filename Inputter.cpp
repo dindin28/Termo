@@ -4,14 +4,16 @@
 
 #include "Definitions.h"
 
-Timer Inputter::input_timer_;
+Inputter::Inputter(int analog_pin)
+ : analog_pin_(analog_pin)
+{}
 
-enum KeyPressed Inputter::GetKeyPressed(int analog_pin)
+enum KeyPressed Inputter::GetKeyPressed()
 {
   enum KeyPressed return_enum = KeyPressed::NOTHING;
   if (input_timer_.check(kInputDelayMillies))
   {
-    int x = analogRead(0);
+    int x = analogRead(analog_pin_);
     if (x < 60)
     {
       return_enum = KeyPressed::RIGHT;

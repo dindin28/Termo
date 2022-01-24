@@ -16,9 +16,12 @@ enum class KeyPressed
 class Inputter
 {
 public:
-  static KeyPressed GetKeyPressed(int analog_pin);
+  Inputter(int analog_pin);
+  KeyPressed GetKeyPressed();
+
 private:
-  static Timer input_timer_;
+  const int analog_pin_;
+  Timer input_timer_;
 };
 
 #endif
