@@ -14,6 +14,8 @@ public:
 private:
   const int analog_pin_;
   Timer input_timer_;
+  bool last_pressed_button_;
+  unsigned long last_time_button_;
 };
 
 #endif

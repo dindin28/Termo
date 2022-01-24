@@ -3,9 +3,9 @@
 
 enum class HeaterMode
 {
-    HeaterOff = -1,
     HeaterAuto = 0,
     HeaterOn = 1,
+    HeaterOff = 2,
 };
 
 enum class KeyPressed

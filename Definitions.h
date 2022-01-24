@@ -4,7 +4,9 @@
 //================
 // Inputter class
 //================
-const unsigned long kInputDelayMillies = 200;
+const long kInputUpperDelayMillies = 300;
+const long kInputLowerDelayMillies = 50;
+const double kInputAcceleration = 0.5;
 
 //====================
 // TempoManager class
@@ -17,6 +19,8 @@ const int kPinD6Lcd = 6;
 const int kPinD7Lcd = 7;
 
 const int kAnalogPinButtons = 0;
+
+const unsigned int kBps = 9600;
 
 //=======
 // Extra
