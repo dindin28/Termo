@@ -18,4 +18,11 @@ enum class KeyPressed
     SELECT,
 };
 
+enum class SettingsLine
+{
+    TempLimits = 0,
+    HeaterMode,
+    StandByMode,
+};
+
 #endif

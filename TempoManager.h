@@ -21,8 +21,9 @@ private:
   void ChangeTempWindow();
 
 private: // Short functions-helpers
-  void DisplayUpperLowerTemp();
+  void DisplayUpperLowerTemp(bool);
   void DisplayIdleWindow();
+  void DisplaySettingsWindow(SettingsLine);
 
 private:
   LiquidCrystal lcd_;

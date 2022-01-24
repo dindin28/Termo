@@ -4,7 +4,7 @@
 //================
 // Inputter class
 //================
-const long kInputUpperDelayMillies = 300;
+const long kInputUpperDelayMillies = 400;
 const long kInputLowerDelayMillies = 50;
 const double kInputAcceleration = 0.5;
 
@@ -23,6 +23,7 @@ const int kAnalogPinButtons = 0;
 const unsigned int kBps = 9600;
 
 const unsigned long kUpdateIdleWindowDelay = 500;
+const unsigned long kIdleTime = 5000;
 
 //=======
 // Extra

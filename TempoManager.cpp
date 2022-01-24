@@ -11,7 +11,7 @@
 TempoManager::TempoManager()
     : lcd_(kPinRsLcd, kPinEnLcd, kPinD4Lcd, kPinD5Lcd, kPinD6Lcd, kPinD7Lcd),
       inputter_(kAnalogPinButtons),
-      heater_mode_(HeaterMode::HeaterAuto),
+      heater_mode_(HeaterMode::HeaterOff),
       average_temp_(0)
 {
     Serial.begin(kBps);
@@ -21,7 +21,7 @@ TempoManager::TempoManager()
 
     lower_temp_ = memorier_.ReadLowerTemp();
     upper_temp_ = memorier_.ReadUpperTemp();
-    heater_mode_ = memorier_.ReadHeaterMode();
+    //heater_mode_ = memorier_.ReadHeaterMode();
 }
 
 void TempoManager::StartTempo()
@@ -52,7 +52,60 @@ void TempoManager::IdleWindow()
 }
 
 void TempoManager::SettingsWindow()
-{}
+{
+    Timer idle_timer;
+    SettingsLine current_setting = SettingsLine::TempLimits;
+    DisplaySettingsWindow(current_setting);
+    while(idle_timer.check(kIdleTime) == false)
+    {
+        KeyPressed x = inputter_.GetKeyPressed();
+        switch (x)
+        {
+        case (KeyPressed::UP):
+            if(current_setting == SettingsLine::TempLimits)
+            {
+                current_setting = SettingsLine::StandByMode;
+            } else if(current_setting == SettingsLine::StandByMode)
+            {
+                current_setting = SettingsLine::HeaterMode;
+            } else if(current_setting == SettingsLine::HeaterMode)
+            {
+                current_setting = SettingsLine::TempLimits;
+            }
+            DisplaySettingsWindow(current_setting);
+            idle_timer.reset();
+            break;
+        case (KeyPressed::DOWN):
+            if(current_setting == SettingsLine::TempLimits)
+            {
+                current_setting = SettingsLine::HeaterMode;
+            } else if(current_setting == SettingsLine::HeaterMode)
+            {
+                current_setting = SettingsLine::StandByMode;
+            } else if(current_setting == SettingsLine::StandByMode)
+            {
+                current_setting = SettingsLine::TempLimits;
+            }
+            DisplaySettingsWindow(current_setting);
+            idle_timer.reset();
+            break;
+        case (KeyPressed::SELECT):
+            if(current_setting == SettingsLine::TempLimits)
+            {
+                ChangeTempWindow();
+            } else if(current_setting == SettingsLine::HeaterMode)
+            {
+                HeaterModeWindow();
+            } else if(current_setting == SettingsLine::StandByMode)
+            {
+                StandByWindow();
+            }
+            DisplaySettingsWindow(current_setting);
+            idle_timer.reset();
+            break;
+        }
+    }
+}
 
 void TempoManager::StandByWindow()
 {
@@ -144,12 +197,10 @@ void TempoManager::HeaterModeWindow()
 void TempoManager::ChangeTempWindow()
 {
     Serial.println("ChangeTempWindow starting");
-    lcd_.blink();
-    DisplayUpperLowerTemp();
+    bool is_upper_temp = true;
+    DisplayUpperLowerTemp(is_upper_temp);
 
     KeyPressed key_pressed;
-    bool is_upper_temp = true;
-    lcd_.setCursor(0, 0);
     do
     {
         key_pressed = inputter_.GetKeyPressed();
@@ -159,14 +210,14 @@ void TempoManager::ChangeTempWindow()
             if (is_upper_temp == false)
             {
                 is_upper_temp = true;
-                lcd_.setCursor(0, 0);
+                DisplayUpperLowerTemp(is_upper_temp);
             }
             break;
         case (KeyPressed::DOWN):
             if (is_upper_temp == true)
             {
                 is_upper_temp = false;
-                lcd_.setCursor(0, 1);
+                DisplayUpperLowerTemp(is_upper_temp);
             }
             break;
         case (KeyPressed::RIGHT):
@@ -188,8 +239,7 @@ void TempoManager::ChangeTempWindow()
                     }
                 }
             }
-            DisplayUpperLowerTemp();
-            (is_upper_temp) ? (lcd_.setCursor(0, 0)) : (lcd_.setCursor(0, 1));
+            DisplayUpperLowerTemp(is_upper_temp);
             break;
         case (KeyPressed::LEFT):
             if (is_upper_temp == true)
@@ -210,15 +260,13 @@ void TempoManager::ChangeTempWindow()
                     lower_temp_--;
                 }
             }
-            DisplayUpperLowerTemp();
-            (is_upper_temp) ? (lcd_.setCursor(0, 0)) : (lcd_.setCursor(0, 1));
+            DisplayUpperLowerTemp(is_upper_temp);
             break;
         }
     } while (key_pressed != KeyPressed::SELECT);
 
     memorier_.WriteLowerTemp(lower_temp_);
     memorier_.WriteUpperTemp(upper_temp_);
-    lcd_.noBlink();
     Serial.println("ChangeTempWindow ending");
 }
 
@@ -226,7 +274,7 @@ void TempoManager::ChangeTempWindow()
 // Short functions-helpers
 //=====================================
 
-void TempoManager::DisplayUpperLowerTemp()
+void TempoManager::DisplayUpperLowerTemp(bool is_upper_temp)
 {
     lcd_.clear();
 
@@ -237,6 +285,10 @@ void TempoManager::DisplayUpperLowerTemp()
     lcd_.print(' ');
     lcd_.write(uint8_t(0));
     lcd_.print('C');
+    if(is_upper_temp)
+    {
+        lcd_.print(" <-");
+    }
 
     // Lower temperature
     lcd_.setCursor(0, 1);
@@ -245,6 +297,10 @@ void TempoManager::DisplayUpperLowerTemp()
     lcd_.print(' ');
     lcd_.write(uint8_t(0));
     lcd_.print('C');
+    if(is_upper_temp == false)
+    {
+        lcd_.print(" <-");
+    }
 }
 
 void TempoManager::DisplayIdleWindow()
@@ -268,6 +324,30 @@ void TempoManager::DisplayIdleWindow()
         break;
     case (HeaterMode::HeaterOn):
         lcd_.print(" On");
+        break;
+    }
+}
+
+void TempoManager::DisplaySettingsWindow(SettingsLine line)
+{
+    lcd_.clear();
+    lcd_.setCursor(0, 0);
+    switch (line)
+    {
+    case (SettingsLine::TempLimits):
+        lcd_.print("Temp limits <-");
+        lcd_.setCursor(0, 1);
+        lcd_.print("Heater mode");
+        break;
+    case (SettingsLine::HeaterMode):
+        lcd_.print("Heater mode <-");
+        lcd_.setCursor(0, 1);
+        lcd_.print("Stand-by mode");
+        break;
+    case (SettingsLine::StandByMode):
+        lcd_.print("Stand-by mode <-");
+        lcd_.setCursor(0, 1);
+        lcd_.print("Temp limits");
         break;
     }
 }
