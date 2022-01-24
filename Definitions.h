@@ -22,6 +22,8 @@ const int kAnalogPinButtons = 0;
 
 const unsigned int kBps = 9600;
 
+const unsigned long kUpdateIdleWindowDelay = 500;
+
 //=======
 // Extra
 //=======

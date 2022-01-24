@@ -14,12 +14,15 @@ public:
   void StartTempo();
 
 private:
+  void IdleWindow();
+  void SettingsWindow();
   void StandByWindow();
   void HeaterModeWindow();
   void ChangeTempWindow();
 
 private: // Short functions-helpers
   void DisplayUpperLowerTemp();
+  void DisplayIdleWindow();
 
 private:
   LiquidCrystal lcd_;
@@ -29,6 +32,8 @@ private:
 
   int lower_temp_;
   int upper_temp_;
+
+  int average_temp_;
 };
 
 #endif

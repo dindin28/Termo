@@ -11,7 +11,8 @@
 TempoManager::TempoManager()
     : lcd_(kPinRsLcd, kPinEnLcd, kPinD4Lcd, kPinD5Lcd, kPinD6Lcd, kPinD7Lcd),
       inputter_(kAnalogPinButtons),
-      heater_mode_(HeaterMode::HeaterAuto)
+      heater_mode_(HeaterMode::HeaterAuto),
+      average_temp_(0)
 {
     Serial.begin(kBps);
 
@@ -25,14 +26,33 @@ TempoManager::TempoManager()
 
 void TempoManager::StartTempo()
 {
-    ChangeTempWindow();
-    HeaterModeWindow();
-    StandByWindow();
+    IdleWindow();
 }
 
 //=====================================
 // Private Functions
 //=====================================
+
+void TempoManager::IdleWindow()
+{
+    Timer update_window_timer;
+    DisplayIdleWindow();
+    while(true)
+    {
+        if(update_window_timer.check(kUpdateIdleWindowDelay))
+        {
+            DisplayIdleWindow();
+            update_window_timer.reset();
+        }
+        if(inputter_.GetKeyPressed() == KeyPressed::SELECT)
+        {
+            SettingsWindow();
+        }
+    }
+}
+
+void TempoManager::SettingsWindow()
+{}
 
 void TempoManager::StandByWindow()
 {
@@ -225,4 +245,29 @@ void TempoManager::DisplayUpperLowerTemp()
     lcd_.print(' ');
     lcd_.write(uint8_t(0));
     lcd_.print('C');
+}
+
+void TempoManager::DisplayIdleWindow()
+{
+    lcd_.clear();
+    lcd_.setCursor(0, 0);
+    lcd_.print("Avr temp: ");
+    lcd_.print(average_temp_);
+    lcd_.print(' ');
+    lcd_.write(uint8_t(0));
+    lcd_.print('C');
+    lcd_.setCursor(0, 1);
+    lcd_.print("Heater mode:");
+    switch (heater_mode_)
+    {
+    case (HeaterMode::HeaterAuto):
+        lcd_.print("Auto");
+        break;
+    case (HeaterMode::HeaterOff):
+        lcd_.print(" Off");
+        break;
+    case (HeaterMode::HeaterOn):
+        lcd_.print(" On");
+        break;
+    }
 }
