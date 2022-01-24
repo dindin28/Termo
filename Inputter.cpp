@@ -5,8 +5,9 @@
 #include "Definitions.h"
 
 Inputter::Inputter(int analog_pin)
- : analog_pin_(analog_pin)
-{}
+    : analog_pin_(analog_pin)
+{
+}
 
 enum KeyPressed Inputter::GetKeyPressed()
 {

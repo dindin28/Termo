@@ -4,6 +4,7 @@
 #include <LiquidCrystal.h>
 
 #include "Inputter.h"
+#include "TempoTypes.h"
 
 class TempoManager
 {
@@ -17,14 +18,8 @@ private:
 
 private:
   LiquidCrystal lcd_;
-  enum class HeaterMode
-  {
-    HeaterOff = -1,
-    HeaterAuto = 0,
-    HeaterOn = 1,
-  } heater_mode_;
+  HeaterMode heater_mode_;
   Inputter inputter_;
-  
 };
 
 #endif

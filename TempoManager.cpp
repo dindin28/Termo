@@ -3,9 +3,9 @@
 #include "Definitions.h"
 
 TempoManager::TempoManager()
- : lcd_(kPinRsLcd, kPinEnLcd, kPinD4Lcd, kPinD5Lcd, kPinD6Lcd, kPinD7Lcd),
-   inputter_(kAnalogPinButtons),
-   heater_mode_(HeaterMode::HeaterAuto)
+    : lcd_(kPinRsLcd, kPinEnLcd, kPinD4Lcd, kPinD5Lcd, kPinD6Lcd, kPinD7Lcd),
+      inputter_(kAnalogPinButtons),
+      heater_mode_(HeaterMode::HeaterAuto)
 {
     lcd_.begin(16, 2);
     lcd_.createChar(0, kCelsiusDot);
@@ -18,7 +18,8 @@ void TempoManager::StandByWindow()
     lcd_.print("Stand-by Mode");
     lcd_.setCursor(0, 1);
     lcd_.print("Press Select");
-    while(inputter_.GetKeyPressed() != KeyPressed::SELECT);
+    while (inputter_.GetKeyPressed() != KeyPressed::SELECT)
+        ;
 }
 
 void TempoManager::HeaterModeWindow()
@@ -50,14 +51,15 @@ void TempoManager::HeaterModeWindow()
         switch (pressed_key)
         {
         case (KeyPressed::LEFT):
-            if(heater_mode_ == HeaterMode::HeaterOn)
+            if (heater_mode_ == HeaterMode::HeaterOn)
             {
                 heater_mode_ = HeaterMode::HeaterAuto;
                 lcd_.setCursor(0, 0);
                 lcd_.print("OFF - AUTO - ON ");
                 lcd_.setCursor(0, 1);
                 lcd_.print("     <-  ->     ");
-            } else if (heater_mode_ == HeaterMode::HeaterAuto)
+            }
+            else if (heater_mode_ == HeaterMode::HeaterAuto)
             {
                 heater_mode_ = HeaterMode::HeaterOff;
                 lcd_.setCursor(0, 0);
@@ -67,14 +69,15 @@ void TempoManager::HeaterModeWindow()
             }
             break;
         case (KeyPressed::RIGHT):
-            if(heater_mode_ == HeaterMode::HeaterOff)
+            if (heater_mode_ == HeaterMode::HeaterOff)
             {
                 heater_mode_ = HeaterMode::HeaterAuto;
                 lcd_.setCursor(0, 0);
                 lcd_.print("OFF - AUTO - ON ");
                 lcd_.setCursor(0, 1);
                 lcd_.print("     <-  ->     ");
-            } else if (heater_mode_ == HeaterMode::HeaterAuto)
+            }
+            else if (heater_mode_ == HeaterMode::HeaterAuto)
             {
                 heater_mode_ = HeaterMode::HeaterOn;
                 lcd_.setCursor(0, 0);
@@ -85,8 +88,6 @@ void TempoManager::HeaterModeWindow()
             break;
         }
     } while (pressed_key != KeyPressed::SELECT);
-    
-    
 }
 
 void TempoManager::StartTempo()

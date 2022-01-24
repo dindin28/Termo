@@ -3,15 +3,7 @@
 
 #include "Timer.h"
 
-enum class KeyPressed
-{
-  NOTHING = 0,
-  RIGHT,
-  UP,
-  DOWN,
-  LEFT,
-  SELECT,
-};
+#include "TempoTypes.h"
 
 class Inputter
 {
